@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app='myApp'>
+
+<head>
+    <title>My MEAN stack Cookbook app</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container" ng-controller="AppCtrl">
+        <h1>Cookbook</h1>
+        <form name='recipeForm'>
+            <label for='recipeName'>Recipe Name</label>
+            <input class='form-control' name='nameInput' id='recipeName' ng-model='recipe.name' required>
+            <span ng-show='recipeForm.nameInput.$touched && recipeForm.nameInput.$invalid'>Enter name for recipe</span>
+            <br>
+            <label for="ingredientList">Ingredient List</label>
+            <input type="text" name='ingredInput' class="form-control" id='ingredientList' ng-model="recipe.ingredients" placeholder="Seperate ingredients by commas" required>
+            <span ng-show='recipeForm.ingredInput.$touched && recipeForm.ingredInput.$invalid'>Enter ingredients</span>
+            <br>
+            <label for='directs'>Directions</label>
+            <textarea type="text" class='form-control' rows='6' name='directs' id='dirctText' ng-model='recipe.directions' placeholder='(e.g. Mix in a bowl and put in oven etc)' required></textarea>
+            <span ng-show='recipeForm.directs.$touched && recipeForm.directs.$invalid'>Enter directions</span>
+            <br>
+            <label for='rating'>Recipe Rating</label>
+            <select form='recipeForm' name='rating' ng-model='recipe.rating' required>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <br>
+            <button class='btn btn-lrg btn-success' ng-click='addRecipe()'>Add Recipe</button>
+        </form>
+        <hr>
+        <form name='myForm'>
+            <label for="idInput">Search by Ingredient</label>
+            <input class='form-control' name='idInput' type='text' ng-model='ingredient_search' placeholder='Ingredient'>
+            <span ng-show='myForm.idInput.$touched && myForm.idInput.$invalid'>Enter ingredient in input box</span>
+            <br>
+            <button class='btn btn-lrg btn-primary' ng-click='searchIngredient()'>Ingredient Search</button>
+        </form>
+        <br>
+        <div class="row">
+	        <div class="col-lg-4 recipe-partial" ng-repeat='recipe in cookbook'>
+	            <p><strong>{{recipe.name}}</strong></p>
+	            <p>Ingredients</p>
+	            <ul>
+	                <li ng-repeat='item in recipe.ingredients'>{{item}}</li>
+	            </ul>
+	            <p>Directions: {{recipe.directions}}</p>
+	            <p>Rating: {{recipe.rating}} out of 5 stars</p>
+	            <button class='btn btn-md btn-danger' ng-click='deleteRecipe(recipe.id)'>DELETE RECIPE</button>
+	        </div>
+       	</div>
+    </div>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>
+    <script src='./controllers/controller.js'></script>
+</body>
+
+</html>
