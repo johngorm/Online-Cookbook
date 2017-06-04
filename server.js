@@ -23,19 +23,22 @@ db.sequelize.sync().then(function() {
 });
 
 app.get('/recipe', (req, res) =>{
-	console.log('Request sent')
 
 	db.recipe.findAll({}).then(function(recipes) {
 
 		if(recipes.length !== 0){
 			
 			for(var recipe in recipes){
-				recipes[recipe].ingredients = recipes[recipe].ingredients.split(',');
+				if(recipes[recipe].ingredients.split(',')){
+					recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+				}
 			}
 		}
 
 		res.json(recipes);
-	})
+	}).catch(function(error){
+		console.log(error);
+	});
 
 
 });
@@ -51,9 +54,10 @@ app.post('/recipe', (req, res) =>{
 		directions: recipe.directions,
 		rating: recipe.rating
 	}).then(function(response){
-		console.log('post complete');
 		res.json(response);
-	})
+	}).catch(function(error){
+		console.log(error);
+	});
 	
 })
 
@@ -64,7 +68,9 @@ app.get('/recipe/:id', (req,res) =>{
 		}
 	}).then(function(recipe){
 		res.json(recipe);
-	})
+	}).catch(function(error){
+		console.log(error);
+	});
 });
 
 app.delete('/recipe/:id', (req,res) =>{
@@ -75,6 +81,8 @@ app.delete('/recipe/:id', (req,res) =>{
 		}
 	}).then(function(response){
 		res.json(response);
+	}).catch(function(error){
+		console.log(error);
 	});
 })
 
@@ -82,7 +90,6 @@ app.delete('/recipe/:id', (req,res) =>{
 app.get('/recipe/ingredient/:ingredient', (req, res) =>{
 
 	let parsed_ingredient = '%' + req.params.ingredient + '%';
-	console.log("ingredient")
 	db.recipe.findAll({
 		where: {
 			ingredients: {
@@ -90,11 +97,16 @@ app.get('/recipe/ingredient/:ingredient', (req, res) =>{
 			}
 		}
 	}).then(function(recipes){
+
 		for(var recipe in recipes){
-			recipes[recipe].ingredients = recipes[recipe].ingredients.split(',');
+			if(recipes[recipe].ingredients.split(',')){
+				recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+			}
 		}
 		res.json(recipes);
-	})
+	}).catch(function(error){
+		console.log(error);
+	});
 });
 
 

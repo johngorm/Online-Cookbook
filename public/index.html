@@ -12,6 +12,7 @@
 <body>
     <div class="container" ng-controller="AppCtrl">
         <h1>Cookbook</h1>
+        <h2>Add a recipe!</h2>
         <form name='recipeForm'>
             <label for='recipeName'>Recipe Name</label>
             <input class='form-control' name='nameInput' id='recipeName' ng-model='recipe.name' required>
@@ -57,6 +58,7 @@
 	            <p>Rating: {{recipe.rating}} out of 5 stars</p>
 	            <button class='btn btn-md btn-danger' ng-click='deleteRecipe(recipe.id)'>DELETE RECIPE</button>
 	        </div>
+            <span ng-show='cookbook.length == 0' id='no-results-text'>No results found</span>
        	</div>
     </div>
     <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js'></script>

@@ -14,7 +14,6 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http){
 	$scope.getRecipes();
 
 	$scope.searchIngredient = function() {
-		console.trace($scope.ingredient_search);
 		if($scope.ingredient_search !== ''){
 			$http.get('/recipe/ingredient/' + $scope.ingredient_search).then(function(recipes){
 				console.log(recipes);
