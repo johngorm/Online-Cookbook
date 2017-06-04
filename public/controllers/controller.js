@@ -16,8 +16,9 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http){
 	$scope.searchIngredient = function() {
 		if($scope.ingredient_search !== ''){
 			$http.get('/recipe/ingredient/' + $scope.ingredient_search).then(function(recipes){
-				console.log(recipes);
 				$scope.cookbook = recipes.data;
+			}).catch(function(error){
+				console.log(error);
 			});
 		}
 		else{
@@ -26,8 +27,8 @@ myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http){
 	};
 
 	$scope.addRecipe = function() {
-		console.log($scope.recipe);
-		$http.post('/recipe', $scope.recipe).then(function(recipe){
+		$http.post('/recipe', $scope.recipe).then(function(newRecipe){
+			$scope.recipe = null;
 			$scope.getRecipes();
 
 		}).catch(function(error){
