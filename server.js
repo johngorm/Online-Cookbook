@@ -74,7 +74,6 @@ app.get('/recipe/:id', (req,res) =>{
 });
 
 app.delete('/recipe/:id', (req,res) =>{
-	console.log('delete' + req.params.id);
 	db.recipe.destroy({
 		where:{
 			id: req.params.id
