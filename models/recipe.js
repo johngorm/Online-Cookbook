@@ -1,28 +1,28 @@
-module.exports = function(sequelize, DataTypes){
-	let recipe = sequelize.define('recipe', {
-		name: DataTypes.STRING,
-		ingredients: {
-			type: DataTypes.STRING({
-				get: function (){
-					return this.getDataValue('ingredients').split(',');
-				},
-				set: function(){
-					return this.setDataValue('ingredients').join(',');
-				}
+import * as mongoose from 'mongoose';
 
-			}),
-		},
-		directions: {
-			type: DataTypes.TEXT('medium')
-		},
+const Schema = mongoose.Schema;
 
-		rating: {
-			type: DataTypes.INTEGER,
-			
-			validate:{
-				isInt: true
-			}
-		}
-	});
-	return recipe;
-}
+let RecipeSchema = new Schema({
+	name: {
+		type: String, 
+		required: true
+	},
+	rating: {
+		type: Number,
+		default: 0,
+		min: 0,
+		max: 5,
+		required: true		
+	},
+	ingredients: {
+		type: [String],
+		requied: true,
+		get: v => v.split(','),
+		set: v => v.join
+
+	},
+	directions: {
+		type: String,
+		require: true
+	}
+})

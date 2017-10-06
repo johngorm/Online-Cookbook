@@ -15,12 +15,12 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 app.use(express.static(__dirname + "/public"));
 
-db.sequelize.sync().then(function() {
+//db.sequelize.sync().then(function() {
 	
 	app.listen(PORT, function() {
 		console.log("App running on port " + PORT);
 	})
-});
+//});
 
 app.get('/recipe', (req, res) =>{
 
