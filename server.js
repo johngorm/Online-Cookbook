@@ -1,45 +1,46 @@
 'use strict'
-const express = require('express');
-const bodyParser = require("body-parser");
-
-
+import * as express from 'express';
+import * as bodyParser from "body-parser";
+import * as mongoose from 'mongoose';
+import Recipe from './models/recipe.js';
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-const db = require("./models");
+mongoose.connect('mongodb://localhost/test');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connections error:'));
 
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 app.use(express.static(__dirname + "/public"));
 
-//db.sequelize.sync().then(function() {
-	
+db.once('open', () =>{
 	app.listen(PORT, function() {
 		console.log("App running on port " + PORT);
 	})
-//});
+});
 
 app.get('/recipe', (req, res) =>{
 
-	db.recipe.findAll({}).then(function(recipes) {
-
-		if(recipes.length !== 0){
-			
-			for(var recipe in recipes){
-				if(recipes[recipe].ingredients.split(',')){
-					recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+	Recipe.findAll({},(err, results) => {
+		if(err){
+			console.error(err);
+			throw err;
+		}
+		else{
+			if(recipes.length !== 0){
+				
+				for(var recipe in recipes){
+					if(recipes[recipe].ingredients.split(',')){
+						recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+					}
 				}
 			}
+
+			res.json(recipes);
 		}
-
-		res.json(recipes);
-	}).catch(function(error){
-		console.log(error);
-	});
-
+	})
 
 });
 
@@ -48,63 +49,63 @@ app.post('/recipe', (req, res) =>{
 	if(!recipe.rating){
 		recipe.rating = 0;
 	}
-	db.recipe.create({
-		name: recipe.name,
-		ingredients: recipe.ingredients,
-		directions: recipe.directions,
-		rating: recipe.rating
-	}).then(function(response){
-		res.json(response);
-	}).catch(function(error){
-		console.log(error);
-	});
+	let new_recipe = new Recipe(recipe);
+	new_recipe.save( (err, recipe_doc) =>{
+		if(err){
+			console.error(err);
+			throw err;
+		}
+		else{
+			res.redirect('/recipe')
+		}
+	})
 	
 })
 
 app.get('/recipe/:id', (req,res) =>{
-	db.recipe.findOne({
-		where: {
-			id: req.params.id
+	Recipe.findOne({
+		"_id": mongoose.Types.ObjectId(req.params.id)
+	}).exec((err, recipe)=>{
+		if(err){
+			console.error(err);
+			throw err;
 		}
-	}).then(function(recipe){
-		res.json(recipe);
-	}).catch(function(error){
-		console.log(error);
+		else{
+			res.json(recipe);
+		}
 	});
 });
 
 app.delete('/recipe/:id', (req,res) =>{
-	db.recipe.destroy({
-		where:{
-			id: req.params.id
-		}
-	}).then(function(response){
-		res.json(response);
-	}).catch(function(error){
-		console.log(error);
-	});
+	try {
+		Recipe.deleteOne({
+			"_id": mongoose.Types.ObjectId(req.params.id)
+		});
+	} catch (e){
+		console.error(e);
+		throw e;
+	}
 })
 
 
 app.get('/recipe/ingredient/:ingredient', (req, res) =>{
 
-	let parsed_ingredient = '%' + req.params.ingredient + '%';
-	db.recipe.findAll({
-		where: {
-			ingredients: {
-				$like: parsed_ingredient
-			}
+	let ingred = req.params.ingredient ;
+	Recipe.findAll({
+		"ingredients" : new RegExp('^' + ingred + "$", 'i')
+	}, (err, recipes) =>{
+		if(err) {
+			console.error(err);
+			throw err;
 		}
-	}).then(function(recipes){
-
-		for(var recipe in recipes){
-			if(recipes[recipe].ingredients.split(',')){
-				recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+		else{
+			for(var recipe in recipes){
+				if(recipes[recipe].ingredients.split(',')){
+					recipes[recipe].ingredients = recipes[recipe].ingredients.split(','); 
+				}
 			}
+			res.json(recipes);
 		}
-		res.json(recipes);
-	}).catch(function(error){
-		console.log(error);
 	});
 });
 
